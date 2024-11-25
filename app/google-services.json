@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "475049772245",
+    "project_id": "cinephile-bcbbe",
+    "storage_bucket": "cinephile-bcbbe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475049772245:android:326bdbe23eed1c73c18e5c",
+        "android_client_info": {
+          "package_name": "com.example.cinephile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjrwQ9ZTH1_iZKDbbJ8P2ADUrBKt54B6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
