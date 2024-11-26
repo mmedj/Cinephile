@@ -1,0 +1,11 @@
+<resources>
+    <style name="CustomRatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="colorControlNormal">#CCCCCC</item>
+        <item name="colorControlActivated">#FFCC00</item>
+    </style>
+
+        <style name="RoundedImage" parent="">
+            <item name="cornerFamily">rounded</item>
+            <item name="cornerSize">16dp</item> <!-- Adjust radius -->
+        </style>
+</resources>

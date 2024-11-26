@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Wrap everything inside a ScrollView for vertical scrolling -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,48 +14,119 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/popularTitle"
-                android:layout_width="wrap_content"
+            <!-- Popular Movies Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Popular Movies"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:orientation="horizontal"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp" />
+                >
+
+                <TextView
+                    android:id="@+id/popularTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Popular Movies"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp" />
+
+                <TextView
+                    android:id="@+id/morePopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:paddingStart="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="4dp"
+                    android:text="See More"
+                    android:textColor="#AAA9B1"
+                    android:textSize="10sp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"/>
+
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewPopular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <!-- Top Rated Movies Title and RecyclerView -->
-            <TextView
-                android:id="@+id/topRatedTitle"
-                android:layout_width="wrap_content"
+            <!-- Top Rated Movies Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Top Rated Movies"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
+                <TextView
+                    android:id="@+id/topRatedTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Top Rated Movies"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp" />
+
+                <TextView
+                    android:id="@+id/moreTopRated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:paddingStart="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="4dp"
+                    android:text="See More"
+                    android:textColor="#AAA9B1"
+                    android:textSize="10sp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"/>
+
+            </LinearLayout>
+
+            <!-- Upcoming Movies Section -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewTopRated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
 
-            <!-- Upcoming Movies Title and RecyclerView -->
-            <TextView
-                android:id="@+id/upcomingTitle"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Movies"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/upcomingTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Upcoming Movies"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp" />
+
+                <TextView
+                    android:id="@+id/moreUpcoming"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:paddingStart="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="4dp"
+                    android:text="See More"
+                    android:textColor="#AAA9B1"
+                    android:textSize="10sp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"/>
+
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewUpcoming"
@@ -64,16 +134,39 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
 
-            <!-- Now Playing Title and RecyclerView -->
-            <TextView
-                android:id="@+id/nowPlayingTitle"
-                android:layout_width="wrap_content"
+            <!-- Now Playing Movies Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Now Playing"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/nowPlayingTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Now Playing"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp" />
+
+                <TextView
+                    android:id="@+id/moreNowPlaying"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    android:paddingStart="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="4dp"
+                    android:text="See More"
+                    android:textColor="#AAA9B1"
+                    android:textSize="10sp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"/>
+
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewAnother"

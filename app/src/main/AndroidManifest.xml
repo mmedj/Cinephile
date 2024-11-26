@@ -27,8 +27,8 @@
         <activity
             android:name=".HomeActivity"
             android:exported="true"
-            android:label="Home Screen" />
-
+            android:label="Home Screen"
+/>
         <activity
             android:name=".RegisterActivity"
             android:exported="true"

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,7 +14,7 @@ class MovieAdapter(private val movies: List<Movie>) :
     RecyclerView.Adapter<MovieAdapter.MovieRowViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieRowViewHolder {
-        // Create a horizontal LinearLayout to hold three cards
+        // Create a horizontal LinearLayout to hold three movie cards
         val rowLayout = LinearLayout(parent.context).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -22,7 +23,7 @@ class MovieAdapter(private val movies: List<Movie>) :
             orientation = LinearLayout.HORIZONTAL
         }
 
-        // Add three movie items to the row
+        // Inflate and add three movie items to the row
         repeat(3) {
             val movieView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_movie, rowLayout, false)
@@ -33,7 +34,7 @@ class MovieAdapter(private val movies: List<Movie>) :
     }
 
     override fun onBindViewHolder(holder: MovieRowViewHolder, position: Int) {
-        val startIndex = position * 3
+        val startIndex = position * 3 // Start index for the current row
         for (i in 0..2) {
             val movieIndex = startIndex + i
             val movieView = holder.movieViews[i]
@@ -42,10 +43,16 @@ class MovieAdapter(private val movies: List<Movie>) :
                 movieView.visibility = View.VISIBLE
                 val movie = movies[movieIndex]
 
+                // Find views and bind data
                 val titleView = movieView.findViewById<TextView>(R.id.movieTitle)
-                val posterView = movieView.findViewById<ImageView>(R.id.moviePoster)
+                val posterView = movieView.findViewById<ImageView>(R.id.moviePoster2)
+                val overviewView = movieView.findViewById<TextView>(R.id.movieOverview)
+                val ratingBar = movieView.findViewById<RatingBar>(R.id.movieRatingBar)
 
                 titleView.text = movie.title
+                overviewView.text = movie.overview
+                ratingBar.rating = (movie.vote_average / 2).toFloat() // TMDB rating is out of 10, convert to 5 stars
+
                 Glide.with(movieView.context)
                     .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
                     .into(posterView)
@@ -54,6 +61,7 @@ class MovieAdapter(private val movies: List<Movie>) :
             }
         }
     }
+
 
     override fun getItemCount(): Int = (movies.size + 2) / 3 // Ceiling division
 
