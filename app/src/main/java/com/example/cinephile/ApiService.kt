@@ -1,4 +1,5 @@
 package com.example.cinephile
+
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -16,4 +17,8 @@ interface ApiService {
 
     @GET("movie/now_playing") // Example for another category
     fun getNowPlayingMovies(@Query("api_key") apiKey: String): Call<MovieResponse>
+
+    // New endpoint to fetch all genres
+    @GET("genre/movie/list")
+    fun getGenres(@Query("api_key") apiKey: String): Call<GenreResponse>
 }

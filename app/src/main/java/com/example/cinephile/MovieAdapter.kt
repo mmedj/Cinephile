@@ -10,8 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class MovieAdapter(private val movies: List<Movie>) :
-    RecyclerView.Adapter<MovieAdapter.MovieRowViewHolder>() {
+class MovieAdapter(
+    private val movies: List<Movie>,
+    private val genreMap: Map<Int, String> // Pass genreMap to resolve genre IDs to names
+) : RecyclerView.Adapter<MovieAdapter.MovieRowViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieRowViewHolder {
         // Create a horizontal LinearLayout to hold three movie cards
@@ -48,10 +50,15 @@ class MovieAdapter(private val movies: List<Movie>) :
                 val posterView = movieView.findViewById<ImageView>(R.id.moviePoster2)
                 val overviewView = movieView.findViewById<TextView>(R.id.movieOverview)
                 val ratingBar = movieView.findViewById<RatingBar>(R.id.movieRatingBar)
+                val genreView = movieView.findViewById<TextView>(R.id.movieGenres) // Add this in XML if not present
 
                 titleView.text = movie.title
                 overviewView.text = movie.overview
                 ratingBar.rating = (movie.vote_average / 2).toFloat() // TMDB rating is out of 10, convert to 5 stars
+
+                // Map genres from genre IDs
+                val genreNames = movie.genre_ids.mapNotNull { genreMap[it] }.joinToString(", ")
+                genreView.text = genreNames.ifEmpty { "Unknown" }
 
                 Glide.with(movieView.context)
                     .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
@@ -62,8 +69,7 @@ class MovieAdapter(private val movies: List<Movie>) :
         }
     }
 
-
-    override fun getItemCount(): Int = (movies.size + 2) / 3 // Ceiling division
+    override fun getItemCount(): Int = (movies.size + 2) / 3 // Ceiling division for rows
 
     class MovieRowViewHolder(view: LinearLayout) : RecyclerView.ViewHolder(view) {
         val movieViews: List<View> = (0 until 3).map { view.getChildAt(it) }

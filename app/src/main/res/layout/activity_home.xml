@@ -1,41 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        tools:layout_editor_absoluteX="-171dp"
+        tools:layout_editor_absoluteY="-145dp">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- The Background Image -->
+                <ImageView
+                    android:id="@+id/topMovieImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+/>
+
+                <!-- The Black Overlay -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#80000000" /> <!-- Semi-transparent black (50% opacity) -->
+
+                <!-- The Title TextView on Top of the Image -->
+
+
+                <!-- Horizontal LinearLayout for Buttons -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/topMovieTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:paddingLeft="8dp"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:text="Movie Title" />
+
+                    <!-- The Genres TextView Below the Title -->
+                    <TextView
+                        android:id="@+id/topMovieGenres"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        android:paddingLeft="8dp"
+                        android:text="Action, Adventure"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+                    <!-- Details Button -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingLeft="8dp"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/buttonDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="18dp"
+                        android:background="@drawable/round_button_purple"
+                        android:drawableStart="@drawable/outline_info_24"
+                    android:text="Details"
+                    android:textColor="@android:color/white"
+                        android:drawablePadding="8dp"
+
+                        android:textStyle="bold" />
+
+
+                    <!-- Watchlist Button -->
+                    <Button
+                        android:id="@+id/buttonWatchlist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="24dp"
+                        android:background="@drawable/round_button_outline"
+                        android:drawableStart="@drawable/baseline_add_24"
+                        android:tint="@color/white"
+                    android:drawablePadding="8dp"
+                    android:text="My List"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+                </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+
 
             <!-- Popular Movies Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="16dp"
-                >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/popularTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:text="Popular Movies"
+                    android:textColor="#110E47"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="16dp" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/morePopular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"
                     android:background="@drawable/chip_background"
                     android:paddingStart="12dp"
                     android:paddingTop="4dp"
@@ -43,9 +146,7 @@
                     android:paddingBottom="4dp"
                     android:text="See More"
                     android:textColor="#AAA9B1"
-                    android:textSize="10sp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="6dp"/>
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
@@ -58,23 +159,27 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/topRatedTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:text="Top Rated Movies"
+
+                    android:textColor="#110E47"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="16dp" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/moreTopRated"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"
                     android:background="@drawable/chip_background"
                     android:paddingStart="12dp"
                     android:paddingTop="4dp"
@@ -82,9 +187,7 @@
                     android:paddingBottom="4dp"
                     android:text="See More"
                     android:textColor="#AAA9B1"
-                    android:textSize="10sp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="6dp"/>
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
@@ -98,23 +201,26 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/upcomingTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:text="Upcoming Movies"
+                    android:textColor="#110E47"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="16dp" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/moreUpcoming"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"
                     android:background="@drawable/chip_background"
                     android:paddingStart="12dp"
                     android:paddingTop="4dp"
@@ -122,9 +228,7 @@
                     android:paddingBottom="4dp"
                     android:text="See More"
                     android:textColor="#AAA9B1"
-                    android:textSize="10sp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="6dp"/>
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
@@ -138,23 +242,26 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/nowPlayingTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:text="Now Playing"
+                    android:textColor="#110E47"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="16dp" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/moreNowPlaying"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="6dp"
                     android:background="@drawable/chip_background"
                     android:paddingStart="12dp"
                     android:paddingTop="4dp"
@@ -162,9 +269,7 @@
                     android:paddingBottom="4dp"
                     android:text="See More"
                     android:textColor="#AAA9B1"
-                    android:textSize="10sp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="6dp"/>
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
