@@ -2,6 +2,7 @@ package com.example.cinephile
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -21,4 +22,9 @@ interface ApiService {
     // New endpoint to fetch all genres
     @GET("genre/movie/list")
     fun getGenres(@Query("api_key") apiKey: String): Call<GenreResponse>
+    @GET("movie/{movie_id}")
+    fun getMovieDetails(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): Call<MovieDetailsResponse>
 }

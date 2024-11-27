@@ -1,5 +1,6 @@
 package com.example.cinephile
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +64,11 @@ class MovieAdapter(
                 Glide.with(movieView.context)
                     .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
                     .into(posterView)
+                movieView.setOnClickListener {
+                    val intent = Intent(movieView.context, DetailsActivity::class.java)
+                    intent.putExtra("movieId", movie.id) // Pass the movie ID
+                    movieView.context.startActivity(intent)
+                }
             } else {
                 movieView.visibility = View.INVISIBLE
             }

@@ -30,6 +30,11 @@
             android:label="Home Screen"
 />
         <activity
+            android:name=".DetailsActivity"
+            android:exported="true"
+            android:label="Details Screen"
+            />
+        <activity
             android:name=".RegisterActivity"
             android:exported="true"
             android:label="Register"
