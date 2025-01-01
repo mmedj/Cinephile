@@ -8,4 +8,11 @@
             <item name="cornerFamily">rounded</item>
             <item name="cornerSize">16dp</item> <!-- Adjust radius -->
         </style>
+    <style name="Theme.Cinephile.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:windowLightStatusBar">true</item> <!-- Ensures light icons in the status bar -->
+        <item name="android:windowBackground">@color/white</item> <!-- Default background color -->
+    </style>
+
 </resources>

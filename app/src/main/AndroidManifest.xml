@@ -30,6 +30,17 @@
             android:label="Home Screen"
 />
         <activity
+            android:name=".WatchlistActivity"
+            android:exported="true"
+            android:label="Home Screen"
+            android:theme="@style/Theme.Cinephile.Light"/>
+
+        <activity
+            android:name=".SearchActivity"
+            android:exported="true"
+            android:label="Home Screen"
+            />
+        <activity
             android:name=".DetailsActivity"
             android:exported="true"
             android:label="Details Screen"
