@@ -34,6 +34,22 @@ data class MovieDetailsResponse(
 )
 
 
+data class MovieCreditsResponse(
+    val cast: List<Cast>,
+    val crew: List<Crew>
+)
+
+data class Cast(
+    val name: String,
+    val character: String,
+    val profile_path: String?
+)
+
+data class Crew(
+    val name: String,
+    val job: String,
+    val profile_path: String?
+)
 
 data class ProductionCompany(
     val id: Int,

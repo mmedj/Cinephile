@@ -11,69 +11,55 @@ import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
         auth = FirebaseAuth.getInstance()
-        setupViews()
-        setupClickListeners()
-    }
+        val emailEditText: EditText = findViewById(R.id.emailEditText)
+        val passwordEditText: EditText = findViewById(R.id.passwordEditText)
+        val loginButton: Button = findViewById(R.id.loginButton)
+        val registerTextView: TextView = findViewById(R.id.registerTextView)
 
-    private fun setupViews() {
-        emailEditText = findViewById(R.id.emailEditText)
-        passwordEditText = findViewById(R.id.passwordEditText)
-    }
+        loginButton.setOnClickListener {
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
 
-    private fun setupClickListeners() {
-        findViewById<Button>(R.id.loginButton).setOnClickListener { attemptLogin() }
-        findViewById<TextView>(R.id.registerTextView).setOnClickListener { navigateToRegister() }
-    }
-
-    private fun attemptLogin() {
-        val email = emailEditText.text.toString().trim()
-        val password = passwordEditText.text.toString().trim()
-
-        when {
-            email.isEmpty() || password.isEmpty() -> {
-                showToast("Please enter both email and password")
-                return
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter both email and password", Toast.LENGTH_SHORT).show()
+            } else {
+                // Attempt login
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                        // Navigate to HomeActivity
+                        val intent = Intent(this, HomeActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener { exception ->
+                        Toast.makeText(this, "Authentication failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    }
             }
-            else -> performLogin(email, password)
         }
-    }
 
-    private fun performLogin(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                showToast("Login successful!")
-                navigateToHome()
-            }
-            .addOnFailureListener { exception ->
-                showToast("Authentication failed: ${exception.message}")
-            }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun navigateToRegister() {
-        startActivity(Intent(this, RegisterActivity::class.java))
-    }
-
-    private fun navigateToHome() {
-        startActivity(Intent(this, HomeActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        })
-        finish()
+        registerTextView.setOnClickListener {
+            // Navigate to RegisterActivity
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        auth.currentUser?.let { navigateToHome() }
+        // Check if user is already logged in
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 }

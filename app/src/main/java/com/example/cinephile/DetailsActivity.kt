@@ -2,12 +2,19 @@ package com.example.cinephile
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.*
@@ -93,6 +100,26 @@ class DetailsActivity : AppCompatActivity() {
                     showToast("Error: ${t.message}")
                 }
             })
+        // Fetch movie credits (cast and crew)
+        apiService.getMovieCredits(movieId, "4ac21fafbee078016cf47367c9a93b69")
+            .enqueue(object : Callback<MovieCreditsResponse> {
+                override fun onResponse(
+                    call: Call<MovieCreditsResponse>,
+                    response: Response<MovieCreditsResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            displayMovieCredits(it)
+                        }
+                    } else {
+                        showToast("Failed to fetch movie credits.")
+                    }
+                }
+
+                override fun onFailure(call: Call<MovieCreditsResponse>, t: Throwable) {
+                    showToast("Error: ${t.message}")
+                }
+            })
     }
 
     private fun addToWatchlist() {
@@ -155,17 +182,23 @@ class DetailsActivity : AppCompatActivity() {
                 }
         }
     }
+    private fun displayMovieCredits(credits: MovieCreditsResponse) {
+        val castRecyclerView = findViewById<RecyclerView>(R.id.castRecyclerView)
+        val castAdapter = CastAdapter(credits.cast)
+        castRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        castRecyclerView.adapter = castAdapter
+    }
 
     private fun displayMovieDetails(details: MovieDetailsResponse) {
         // Set text and images in the UI
-        findViewById<TextView>(R.id.movieTitle).text = details.title
+        findViewById<TextView>(R.id.movieTitle).text = "${details.title} (${details.release_date.split("-").get(0)})"
         findViewById<TextView>(R.id.movieTagline).text = details.tagline ?: ""
         findViewById<TextView>(R.id.movieOverview).text = details.overview
         findViewById<TextView>(R.id.movieRuntime).text = "${details.runtime ?: "N/A"} mins"
-        findViewById<TextView>(R.id.movieReleaseDate).text = "Release Date: ${details.release_date}"
-        findViewById<TextView>(R.id.movieVoteAverage).text = "Rating: ${details.vote_average} (${details.vote_count} votes)"
-        findViewById<TextView>(R.id.movieBudget).text = "Budget: $${details.budget ?: "N/A"}"
-        findViewById<TextView>(R.id.movieRevenue).text = "Revenue: $${details.revenue ?: "N/A"}"
+        findViewById<TextView>(R.id.movieVoteAverage).text = "${details.vote_average} "
+        findViewById<TextView>(R.id.movieNumberOfVoters).text = "(${details.vote_count} votes)"
+        findViewById<TextView>(R.id.movieBudget).text = "${details.budget ?: "N/A"}$"
+        findViewById<TextView>(R.id.movieRevenue).text = "${details.revenue ?: "N/A"}$"
 
         setupGenres(details)
         loadImages(details)
@@ -212,5 +245,29 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+}
+class CastAdapter(private val castList: List<Cast>) : RecyclerView.Adapter<CastAdapter.CastViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CastViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_cast, parent, false)
+        return CastViewHolder(itemView)
+    }
+
+    override fun onBindViewHolder(holder: CastViewHolder, position: Int) {
+        val castMember = castList[position]
+        holder.nameTextView.text = castMember.name
+
+        Glide.with(holder.itemView)
+            .load("https://image.tmdb.org/t/p/w500${castMember.profile_path}")
+            .apply(RequestOptions().transform(RoundedCorners(24))) // Applying rounded corners transformation
+            .into(holder.profileImageView)
+    }
+
+    override fun getItemCount(): Int = castList.size
+
+    class CastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val profileImageView: ImageView = itemView.findViewById(R.id.castProfileImage)
+        val nameTextView: TextView = itemView.findViewById(R.id.castName)
     }
 }

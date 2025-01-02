@@ -14,73 +14,61 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class HomeActivity : AppCompatActivity() {
-
     private val apiKey = "4ac21fafbee078016cf47367c9a93b69"
     private lateinit var genreMap: Map<Int, String>
+    private val categories = listOf("popular", "top_rated", "upcoming", "now_playing")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+        // Setup bottom navigation
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.selectedItemId = R.id.nav_home
+        bottomNavigationView.setOnItemSelectedListener { navigateBottomNav(it.itemId) }
 
-        // Handle navigation item clicks
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> true // Stay on the HomeActivity
-                R.id.nav_search -> {
-                    startActivity(Intent(this, SearchActivity::class.java))
-                    true
-                }
-
-                R.id.nav_watchlist -> {
-                    startActivity(Intent(this, WatchlistActivity::class.java))
-                    true
-                }
-
-                else -> false
-            }
-        }
-
+        // Setup RecyclerViews
         val recyclerViews = listOf(
             findViewById<RecyclerView>(R.id.recyclerViewPopular),
             findViewById<RecyclerView>(R.id.recyclerViewTopRated),
             findViewById<RecyclerView>(R.id.recyclerViewUpcoming),
             findViewById<RecyclerView>(R.id.recyclerViewAnother)
         )
+        recyclerViews.forEach { setupRecyclerView(it) }
 
-        val categories = listOf("popular", "top_rated", "upcoming", "now_playing")
+        // Fetch data and populate UI
+        fetchGenresAndMovies(recyclerViews)
+    }
 
-        // Fetch genres first and then fetch movies
-        fetchGenres {
-            recyclerViews.forEachIndexed { index, recyclerView ->
-                setupRecyclerView(recyclerView)
-                fetchMovies(categories[index], recyclerView)
+    private fun navigateBottomNav(itemId: Int): Boolean {
+        return when (itemId) {
+            R.id.nav_home -> true // Stay on HomeActivity
+            R.id.nav_search -> {
+                startActivity(Intent(this, SearchActivity::class.java))
+                true
             }
-
-            // Display a random popular movie at the top
-            fetchMovies("popular", null, isForTopDisplay = true)
+            R.id.nav_watchlist -> {
+                startActivity(Intent(this, WatchlistActivity::class.java))
+                true
+            }
+            else -> false
         }
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@HomeActivity, LinearLayoutManager.HORIZONTAL, false)
-            clipToPadding = false
-            setPadding(
-                resources.getDimensionPixelSize(R.dimen.recycler_padding), 0,
-                resources.getDimensionPixelSize(R.dimen.recycler_padding), 0
-            )
-        }
+        recyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.setPadding(16, 0, 16, 0) // Simple padding
     }
 
-    private fun fetchGenres(onGenresFetched: () -> Unit) {
-        val call = RetrofitInstance.apiService.getGenres(apiKey)
-        call.enqueue(object : Callback<GenreResponse> {
+    private fun fetchGenresAndMovies(recyclerViews: List<RecyclerView>) {
+        // Fetch genres first
+        RetrofitInstance.apiService.getGenres(apiKey).enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (response.isSuccessful && response.body() != null) {
-                    genreMap = response.body()!!.genres.associateBy({ it.id }, { it.name })
-                    onGenresFetched()
+                    genreMap = response.body()!!.genres.associate { it.id to it.name }
+                    // Fetch movies after genres are fetched
+                    fetchAllMovies(recyclerViews)
                 }
             }
 
@@ -90,7 +78,19 @@ class HomeActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchMovies(category: String, recyclerView: RecyclerView?, isForTopDisplay: Boolean = false) {
+    private fun fetchAllMovies(recyclerViews: List<RecyclerView>) {
+        categories.forEachIndexed { index, category ->
+            fetchMovies(category) { movies ->
+                recyclerViews[index].adapter = MovieAdapter(movies, genreMap)
+            }
+        }
+        // Fetch and display a random popular movie at the top
+        fetchMovies("popular") { movies ->
+            if (movies.isNotEmpty()) displayTopMovie(movies.random())
+        }
+    }
+
+    private fun fetchMovies(category: String, onMoviesFetched: (List<Movie>) -> Unit) {
         val call = when (category) {
             "popular" -> RetrofitInstance.apiService.getPopularMovies(apiKey)
             "top_rated" -> RetrofitInstance.apiService.getTopRatedMovies(apiKey)
@@ -102,15 +102,7 @@ class HomeActivity : AppCompatActivity() {
         call.enqueue(object : Callback<MovieResponse> {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 if (response.isSuccessful && response.body() != null) {
-                    val movies = response.body()!!.results
-
-                    if (isForTopDisplay) {
-                        // Display a random movie at the top
-                        displayTopMovie(movies.random())
-                    } else if (recyclerView != null) {
-                        val adapter = MovieAdapter(movies, genreMap)
-                        recyclerView.adapter = adapter
-                    }
+                    onMoviesFetched(response.body()!!.results)
                 }
             }
 
@@ -127,8 +119,8 @@ class HomeActivity : AppCompatActivity() {
 
         // Set movie details
         topMovieTitle.text = movie.title
-        val genreNames = movie.genre_ids.mapNotNull { genreMap[it] }.joinToString(", ")
-        topMovieGenres.text = genreNames.ifEmpty { "Unknown" }
+        topMovieGenres.text = movie.genre_ids.mapNotNull { genreMap[it] }.joinToString(", ")
+            .ifEmpty { "Unknown" }
 
         Glide.with(this)
             .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")

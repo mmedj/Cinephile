@@ -27,4 +27,9 @@ interface ApiService {
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String
     ): Call<MovieDetailsResponse>
+    @GET("movie/{movie_id}/credits")
+    fun getMovieCredits(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): Call<MovieCreditsResponse>
 }
