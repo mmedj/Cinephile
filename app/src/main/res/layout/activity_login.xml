@@ -57,16 +57,25 @@
             android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginBottom="24dp"
             android:backgroundTint="#6A1B9A"
             android:text="Sign In"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/or"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Or"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginVertical="5dp"/>
+
         <Button
             android:id="@+id/googleSignInButton"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
             android:backgroundTint="#DB4437"
             android:text="Sign In with Google"
             android:textColor="#FFFFFF"
