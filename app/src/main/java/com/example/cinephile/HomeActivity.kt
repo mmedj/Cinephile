@@ -2,6 +2,7 @@ package com.example.cinephile
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -22,12 +23,9 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // Setup bottom navigation
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.selectedItemId = R.id.nav_home
         bottomNavigationView.setOnItemSelectedListener { navigateBottomNav(it.itemId) }
-
-        // Setup RecyclerViews
         val recyclerViews = listOf(
             findViewById<RecyclerView>(R.id.recyclerViewPopular),
             findViewById<RecyclerView>(R.id.recyclerViewTopRated),
@@ -35,8 +33,6 @@ class HomeActivity : AppCompatActivity() {
             findViewById<RecyclerView>(R.id.recyclerViewAnother)
         )
         recyclerViews.forEach { setupRecyclerView(it) }
-
-        // Fetch data and populate UI
         fetchGenresAndMovies(recyclerViews)
     }
 
@@ -54,20 +50,17 @@ class HomeActivity : AppCompatActivity() {
             else -> false
         }
     }
-
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.setPadding(16, 0, 16, 0) // Simple padding
+        recyclerView.setPadding(16, 0, 16, 0)
     }
-
     private fun fetchGenresAndMovies(recyclerViews: List<RecyclerView>) {
         // Fetch genres first
         RetrofitInstance.apiService.getGenres(apiKey).enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (response.isSuccessful && response.body() != null) {
                     genreMap = response.body()!!.genres.associate { it.id to it.name }
-                    // Fetch movies after genres are fetched
                     fetchAllMovies(recyclerViews)
                 }
             }
@@ -116,8 +109,7 @@ class HomeActivity : AppCompatActivity() {
         val topMovieImage = findViewById<ImageView>(R.id.topMovieImage)
         val topMovieTitle = findViewById<TextView>(R.id.topMovieTitle)
         val topMovieGenres = findViewById<TextView>(R.id.topMovieGenres)
-
-        // Set movie details
+        val btnGoToMovies = findViewById<Button>(R.id.buttonDetails) // The button to navigate
         topMovieTitle.text = movie.title
         topMovieGenres.text = movie.genre_ids.mapNotNull { genreMap[it] }.joinToString(", ")
             .ifEmpty { "Unknown" }
@@ -125,5 +117,10 @@ class HomeActivity : AppCompatActivity() {
         Glide.with(this)
             .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
             .into(topMovieImage)
+        btnGoToMovies.setOnClickListener {
+            val intent = Intent(this, DetailsActivity::class.java)
+            intent.putExtra("movieId", movie.id) // Pass the movie ID
+            startActivity(intent)
+        }
     }
 }

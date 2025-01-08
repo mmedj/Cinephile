@@ -62,6 +62,15 @@
             android:text="Sign In"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
+        <Button
+            android:id="@+id/googleSignInButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#DB4437"
+            android:text="Sign In with Google"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
 
         <!-- Sign-Up Text -->
         <TextView
