@@ -1,8 +1,5 @@
 <resources>
-    <style name="CustomRatingBar" parent="Widget.AppCompat.RatingBar.Small">
-        <item name="colorControlNormal">#CCCCCC</item>
-        <item name="colorControlActivated">#FFCC00</item>
-    </style>
+
 
         <style name="RoundedImage" parent="">
             <item name="cornerFamily">rounded</item>
@@ -13,6 +10,11 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:windowLightStatusBar">true</item> <!-- Ensures light icons in the status bar -->
         <item name="android:windowBackground">@color/white</item> <!-- Default background color -->
+    </style>
+    <style name="RoundedTopCorners">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">16dp</item> <!-- This will apply to all corners -->
+ <!-- Explicit top right corner radius -->
     </style>
 
 </resources>

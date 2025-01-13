@@ -1,5 +1,6 @@
-package com.example.cinephile
+package com.example.cinephile.Retrofit
 
+import com.example.cinephile.Services.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

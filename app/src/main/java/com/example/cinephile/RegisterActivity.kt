@@ -53,7 +53,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
         }
         registerTextView.setOnClickListener {
-            val intent = Intent(this,HomeActivity::class.java)
+            val intent = Intent(this,MainActivity::class.java)
             startActivity(intent)
         }
     }

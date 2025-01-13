@@ -1,5 +1,10 @@
-package com.example.cinephile
+package com.example.cinephile.Services
 
+import com.example.cinephile.dataClass.GenreResponse
+import com.example.cinephile.dataClass.MovieCreditsResponse
+import com.example.cinephile.dataClass.MovieDetailsResponse
+import com.example.cinephile.dataClass.MovieResponse
+import com.example.cinephile.dataClass.MovieVideosResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -32,4 +37,10 @@ interface ApiService {
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String
     ): Call<MovieCreditsResponse>
+    @GET("movie/{movie_id}/videos")
+    fun getMovieVideos(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): Call< MovieVideosResponse>
+
 }

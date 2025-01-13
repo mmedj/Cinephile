@@ -1,4 +1,4 @@
-package com.example.cinephile
+package com.example.cinephile.dataClass
 
 data class Genre(
     val id: Int,
@@ -12,9 +12,18 @@ data class Movie(
     val poster_path: String?,
     val genre_ids: List<Int>,
     val vote_average: Double,
+    val rating: Float,
+    val release_date: String
+)
+data class SimilarMovie(
+    val id: Int,
+    val title: String,
+    val overview: String?,
+    val poster_path: String?,
+    val genres: String,
+    val vote_average: Double,
     val rating: Float
 )
-
 data class MovieDetailsResponse(
     val id: Int,
     val title: String,

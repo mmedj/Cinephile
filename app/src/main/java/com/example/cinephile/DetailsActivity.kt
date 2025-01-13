@@ -1,12 +1,16 @@
 package com.example.cinephile
 
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,11 +19,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.example.cinephile.Retrofit.FlaskRetrofitInstance
+import com.example.cinephile.Services.ApiService
+import com.example.cinephile.dataClass.Cast
+import com.example.cinephile.dataClass.MovieCreditsResponse
+import com.example.cinephile.dataClass.MovieDetailsResponse
+import com.example.cinephile.dataClass.MovieVideosResponse
+import com.example.cinephile.dataClass.SimilarMovie
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 data class WatchlistMovie(
     val movieId: Int = 0,
     val title: String = "",
@@ -38,20 +51,16 @@ class DetailsActivity : AppCompatActivity() {
     private var movieId: Int = -1
     private var currentMovie: MovieDetailsResponse? = null
     private lateinit var bookmarkIcon: ImageView
-
+    private lateinit var similarMoviesRecyclerView: RecyclerView
+    private lateinit var moviesAdapter: SimilarMovieAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-
-        // Initialize Firebase
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
-
-        // Initialize views
         bookmarkIcon = findViewById(R.id.bookmarkIcon)
-
-        // Get movie ID
         movieId = intent.getIntExtra("movieId", -1)
+        similarMoviesRecyclerView = findViewById(R.id.similarMoviesRecyclerView)
         if (movieId == -1) {
             showToast("Movie ID is missing!")
             finish()
@@ -61,6 +70,7 @@ class DetailsActivity : AppCompatActivity() {
         setupWatchlistButton()
         checkIfMovieInWatchlist()
         fetchMovieDetails()
+        fetchMovieTrailer()
     }
 
     private fun setupWatchlistButton() {
@@ -110,6 +120,7 @@ class DetailsActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         response.body()?.let {
                             displayMovieCredits(it)
+                            fetchRecommendedMovies(movieId)
                         }
                     } else {
                         showToast("Failed to fetch movie credits.")
@@ -120,6 +131,35 @@ class DetailsActivity : AppCompatActivity() {
                     showToast("Error: ${t.message}")
                 }
             })
+    }
+
+    private fun fetchRecommendedMovies(movieId: Int) {
+        FlaskRetrofitInstance.apiService.getRecommendedMovies(movieId) // This is the call to your Flask API
+            .enqueue(object : Callback<List<SimilarMovie>> {
+                override fun onResponse(
+                    call: Call<List<SimilarMovie>>,
+                    response: Response<List<SimilarMovie>>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            setupSimilarMoviesRecyclerView(it)
+                        }
+                    } else {
+                        showToast("Failed to fetch recommended movies.")
+                    }
+                }
+
+                override fun onFailure(call: Call<List<SimilarMovie>>, t: Throwable) {
+                    showToast("Error: ${t.message}")
+                }
+            })
+    }
+
+    private fun setupSimilarMoviesRecyclerView(movies: List<SimilarMovie>) {
+        // Initialize the adapter and set it to the RecyclerView
+        moviesAdapter = SimilarMovieAdapter(movies)
+        similarMoviesRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        similarMoviesRecyclerView.adapter = moviesAdapter
     }
 
     private fun addToWatchlist() {
@@ -246,6 +286,56 @@ class DetailsActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+    private fun fetchMovieTrailer() {
+        val apiService = Retrofit.Builder()
+            .baseUrl("https://api.themoviedb.org/3/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
+        apiService.getMovieVideos(movieId, "4ac21fafbee078016cf47367c9a93b69")
+            .enqueue(object : Callback<MovieVideosResponse> {
+                override fun onResponse(
+                    call: Call<MovieVideosResponse>,
+                    response: Response<MovieVideosResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val videos = response.body()?.results
+                        videos?.forEach { println("Video: ${it.name}, Site: ${it.site}, Type: ${it.type}, Key: ${it.key}") }
+                        videos?.firstOrNull { it.site == "YouTube" && it.type == "Trailer" }?.let { video ->
+                            displayTrailer(video.key)
+                        } ?: showToast("No trailer found for this movie.")
+                    } else {
+                        showToast("Failed to fetch movie trailers.")
+                    }
+                }
+
+
+                override fun onFailure(call: Call<MovieVideosResponse>, t: Throwable) {
+                    showToast("Error: ${t.message}")
+                }
+            })
+
+    }
+
+
+        private fun displayTrailer(videoKey: String) {
+            val trailerWebView = findViewById<WebView>(R.id.trailerWebView)
+
+            // Enable JavaScript and adjust settings
+            val webSettings: WebSettings = trailerWebView.settings
+            webSettings.javaScriptEnabled = true
+            webSettings.loadWithOverviewMode = true
+            webSettings.useWideViewPort = true
+
+            trailerWebView.webViewClient = WebViewClient()
+
+            // Load the YouTube embed URL
+            val trailerUrl = "https://www.youtube.com/embed/$videoKey"
+            trailerWebView.loadUrl(trailerUrl)
+        }
+
+
+
 }
 class CastAdapter(private val castList: List<Cast>) : RecyclerView.Adapter<CastAdapter.CastViewHolder>() {
 
@@ -269,5 +359,49 @@ class CastAdapter(private val castList: List<Cast>) : RecyclerView.Adapter<CastA
     class CastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profileImageView: ImageView = itemView.findViewById(R.id.castProfileImage)
         val nameTextView: TextView = itemView.findViewById(R.id.castName)
+    }
+}
+
+class SimilarMovieAdapter(
+    private val similarMovies: List<SimilarMovie>
+) : RecyclerView.Adapter<SimilarMovieAdapter.SimilarMovieViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarMovieViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false)
+        return SimilarMovieViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: SimilarMovieViewHolder, position: Int) {
+        val similarMovie = similarMovies[position]
+
+        // Bind data to views
+        holder.titleTextView.text = similarMovie.title
+        holder.overviewTextView.text = similarMovie.overview
+        holder.ratingBar.rating = (similarMovie.vote_average / 2).toFloat()  // Convert to 5-star rating
+
+        // Set genre
+        holder.genreTextView.text = similarMovie.genres.ifEmpty { "Unknown" }
+
+        // Load poster image using Glide
+        Glide.with(holder.itemView.context)
+            .load("https://image.tmdb.org/t/p/w500${similarMovie.poster_path}")
+            .into(holder.posterImageView)
+
+        // Handle item click
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, DetailsActivity::class.java)
+            intent.putExtra("movieId", similarMovie.id)  // Pass the movie ID
+            holder.itemView.context.startActivity(intent)
+        }
+    }
+
+    override fun getItemCount(): Int = similarMovies.size
+
+    class SimilarMovieViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val titleTextView: TextView = view.findViewById(R.id.movieTitle)
+        val overviewTextView: TextView = view.findViewById(R.id.movieOverview)
+        val ratingBar: RatingBar = view.findViewById(R.id.movieRatingBar)
+        val genreTextView: TextView = view.findViewById(R.id.movieGenres)
+        val posterImageView: ImageView = view.findViewById(R.id.moviePoster2)
     }
 }
