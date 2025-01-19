@@ -16,5 +16,10 @@
         <item name="cornerRadius">16dp</item> <!-- This will apply to all corners -->
  <!-- Explicit top right corner radius -->
     </style>
+    <style name="CustomQueryTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#FFFFFF</item> <!-- White text -->
+        <item name="android:textStyle">bold</item> <!-- Bold text -->
+        <item name="android:textSize">16sp</item> <!-- Text size -->
+    </style>
 
 </resources>

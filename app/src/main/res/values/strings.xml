@@ -2,5 +2,11 @@
     <string name="app_name">Cinephile</string>
     <string name="movie_poster">Movie Poster</string>
     <string name="default_web_client_id">475049772245-hahh33mliobkut8ko8bhh5ob8v97u3m9.apps.googleusercontent.com</string>
-
+    <string name="select_genre">Select Genre</string>
+    <string name="select_rating">Select Rating</string>
+    <string name="select_year">Select Year</string>
+    <string-array name="type_array">
+        <item>Movie</item>
+        <item>TV Show</item>
+    </string-array>
 </resources>

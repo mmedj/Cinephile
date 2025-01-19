@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -13,72 +12,59 @@ import com.bumptech.glide.Glide
 import com.example.cinephile.dataClass.Movie
 
 class MovieAdapter(
-    private val movies: List<Movie>,
-    private val genreMap: Map<Int, String> // Pass genreMap to resolve genre IDs to names
-) : RecyclerView.Adapter<MovieAdapter.MovieRowViewHolder>() {
+    private var movies: List<Movie>,
+    private val genreMap: Map<Int, String>,
+    private val isSearchView: Boolean = false // Add this parameter to determine which layout to use
+) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieRowViewHolder {
-        // Create a horizontal LinearLayout to hold three movie cards
-        val rowLayout = LinearLayout(parent.context).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            orientation = LinearLayout.HORIZONTAL
-        }
-
-        // Inflate and add three movie items to the row
-        repeat(3) {
-            val movieView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_movie, rowLayout, false)
-            rowLayout.addView(movieView)
-        }
-
-        return MovieRowViewHolder(rowLayout)
+    fun updateMovies(newMovies: List<Movie>) {
+        this.movies = newMovies
+        notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: MovieRowViewHolder, position: Int) {
-        val startIndex = position * 3 // Start index for the current row
-        for (i in 0..2) {
-            val movieIndex = startIndex + i
-            val movieView = holder.movieViews[i]
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
+        val layoutId = if (isSearchView) R.layout.movie_search else R.layout.item_movie
+        val view = LayoutInflater.from(parent.context)
+            .inflate(layoutId, parent, false)
+        return MovieViewHolder(view)
+    }
 
-            if (movieIndex < movies.size) {
-                movieView.visibility = View.VISIBLE
-                val movie = movies[movieIndex]
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
+        val movie = movies[position]
+        holder.bind(movie)
+    }
 
-                // Find views and bind data
-                val titleView = movieView.findViewById<TextView>(R.id.movieTitle)
-                val posterView = movieView.findViewById<ImageView>(R.id.moviePoster2)
-                val overviewView = movieView.findViewById<TextView>(R.id.movieOverview)
-                val ratingBar = movieView.findViewById<RatingBar>(R.id.movieRatingBar)
-                val genreView = movieView.findViewById<TextView>(R.id.movieGenres) // Add this in XML if not present
+    override fun getItemCount(): Int = movies.size
 
-                titleView.text = movie.title
-                overviewView.text = movie.overview
-                ratingBar.rating = (movie.vote_average / 2).toFloat() // TMDB rating is out of 10, convert to 5 stars
+    inner class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val posterView: ImageView = itemView.findViewById(R.id.moviePoster2)
+        private val titleView: TextView = itemView.findViewById(R.id.movieTitle)
+        private val overviewView: TextView = itemView.findViewById(R.id.movieOverview)
+        private val ratingBar: RatingBar = itemView.findViewById(R.id.movieRatingBar)
+        private val genreView: TextView = itemView.findViewById(R.id.movieGenres)
 
-                // Map genres from genre IDs
-                val genreNames = movie.genre_ids.mapNotNull { genreMap[it] }.joinToString(", ")
-                genreView.text = genreNames.ifEmpty { "Unknown" }
+        fun bind(movie: Movie) {
+            titleView.text = movie.title
+            overviewView.text = movie.overview
+            ratingBar.rating = (movie.vote_average / 2).toFloat()
 
-                Glide.with(movieView.context)
+            // Map genres from genre IDs
+            val genreNames = movie.genre_ids.mapNotNull { genreMap[it] }.take(2).joinToString(", ")
+            genreView.text = genreNames.ifEmpty { "Unknown" }
+
+            // Load poster image
+            if (!movie.poster_path.isNullOrEmpty()) {
+                Glide.with(itemView.context)
                     .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
                     .into(posterView)
-                movieView.setOnClickListener {
-                    val intent = Intent(movieView.context, DetailsActivity::class.java)
-                    intent.putExtra("movieId", movie.id) // Pass the movie ID
-                    movieView.context.startActivity(intent)
-                }
-            } else {
-                movieView.visibility = View.INVISIBLE
+            }
+
+            // Set click listener for the entire card
+            itemView.setOnClickListener {
+                val intent = Intent(itemView.context, DetailsActivity::class.java)
+                intent.putExtra("movieId", movie.id)
+                itemView.context.startActivity(intent)
             }
         }
-    }
-
-    override fun getItemCount(): Int = (movies.size + 2) / 3 // Ceiling division for rows
-
-    class MovieRowViewHolder(view: LinearLayout) : RecyclerView.ViewHolder(view) {
-        val movieViews: List<View> = (0 until 3).map { view.getChildAt(it) }
     }
 }
