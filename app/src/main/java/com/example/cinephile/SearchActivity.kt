@@ -181,6 +181,7 @@ class SearchActivity : AppCompatActivity() {
                                         if (response.isSuccessful) {
                                                 val genres = response.body()?.genres ?: emptyList()
                                                 val genreMap = genres.associateBy({ it.id }, { it.name })
+                                                searchAdapter.updateGenreMap(genreMap)
                                                 callback(genreMap)
                                         } else {
                                                 Log.e("SearchActivity", "Error fetching genres: ${response.message()}")

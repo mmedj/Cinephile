@@ -13,7 +13,7 @@ import com.example.cinephile.dataClass.Movie
 
 class MovieAdapter(
     private var movies: List<Movie>,
-    private val genreMap: Map<Int, String>,
+    private var genreMap: Map<Int, String>,
     private val isSearchView: Boolean = false // Add this parameter to determine which layout to use
 ) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
@@ -49,9 +49,15 @@ class MovieAdapter(
             ratingBar.rating = (movie.vote_average / 2).toFloat()
 
             // Map genres from genre IDs
-            val genreNames = movie.genre_ids.mapNotNull { genreMap[it] }.take(2).joinToString(", ")
-            genreView.text = genreNames.ifEmpty { "Unknown" }
+            val genreNames = movie.genre_ids
+                .mapNotNull { genreId -> this@MovieAdapter.genreMap[genreId] }
+                .joinToString(", ")
 
+            genreView.text = if (genreNames.isNotEmpty()) {
+                genreNames
+            } else {
+                "Genre information unavailable"
+            }
             // Load poster image
             if (!movie.poster_path.isNullOrEmpty()) {
                 Glide.with(itemView.context)
@@ -66,5 +72,9 @@ class MovieAdapter(
                 itemView.context.startActivity(intent)
             }
         }
+    }
+    fun updateGenreMap(newGenreMap: Map<Int, String>) {
+        genreMap = newGenreMap
+        notifyDataSetChanged()
     }
 }
