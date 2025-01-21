@@ -54,6 +54,14 @@ interface ApiService {
         @Query("api_key") apiKey: String,
         @Query("query") query: String
     ): Call<MovieResponse>
+    @GET("search/movie")
+    fun searchMovies(
+        @Query("api_key") apiKey: String,
+        @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int = 1
+    ): Call<MovieResponse>
 
     // New endpoint to fetch all genres
     @GET("genre/movie/list")
@@ -62,8 +70,8 @@ interface ApiService {
     fun discoverMovies(
         @Query("api_key") apiKey: String,
         @Query("with_genres") genreId: String,
-        @Query("vote_average.gte") minRating: Double, // Minimum rating
-        @Query("vote_average.lte") maxRating: Double, // Maximum rating
+        @Query("vote_average.gte") minRating: Double? = null, // Minimum rating
+        @Query("vote_average.lte") maxRating: Double? = null, // Maximum rating
         @Query("primary_release_year") releaseYear: Int? // Optional year filter
     ): Call<MovieResponse>
 
